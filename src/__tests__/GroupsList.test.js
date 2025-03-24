@@ -3,7 +3,36 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import GroupsList from '../components/grouplist';
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
+
+// Mock the axios instance with proper implementation
+jest.mock('../utils/axios', () => {
+  const mockAxiosInstance = {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: {
+        use: jest.fn(),
+        eject: jest.fn()
+      },
+      response: {
+        use: jest.fn(),
+        eject: jest.fn()
+      }
+    }
+  };
+  return mockAxiosInstance;
+});
+
+// Mock the window.location.hostname
+Object.defineProperty(window, 'location', {
+  value: {
+    hostname: 'localhost'
+  },
+  writable: true
+});
 
 describe('GroupsList Component', () => {
   const mockGroups = [
@@ -63,7 +92,7 @@ describe('GroupsList Component', () => {
   });
 
   test('displays groups when data is loaded successfully', async () => {
-    axios.get.mockResolvedValueOnce({ data: mockGroups });
+    axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
     render(
       <BrowserRouter>
@@ -82,7 +111,7 @@ describe('GroupsList Component', () => {
   });
 
   test('displays error message when API call fails', async () => {
-    axios.get.mockRejectedValueOnce(new Error('Failed to fetch'));
+    axiosInstance.get.mockRejectedValueOnce(new Error('Failed to fetch'));
 
     render(
       <BrowserRouter>
@@ -96,7 +125,7 @@ describe('GroupsList Component', () => {
   });
 
   test('displays "No groups available" message when no groups exist', async () => {
-    axios.get.mockResolvedValueOnce({ data: [] });
+    axiosInstance.get.mockResolvedValueOnce({ data: [] });
 
     render(
       <BrowserRouter>
@@ -110,7 +139,7 @@ describe('GroupsList Component', () => {
   });
 
   test('renders group details correctly', async () => {
-    axios.get.mockResolvedValueOnce({ data: mockGroups });
+    axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
     render(
       <BrowserRouter>
@@ -127,7 +156,7 @@ describe('GroupsList Component', () => {
   });
 
   test('displays public/private badges correctly', async () => {
-    axios.get.mockResolvedValueOnce({ data: mockGroups });
+    axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
     render(
       <BrowserRouter>
