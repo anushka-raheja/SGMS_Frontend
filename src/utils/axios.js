@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const baseURL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5001'
+  : 'https://sgms-backend.onrender.com';
+
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL,
   headers: {
     'Content-Type': 'application/json'
   }
