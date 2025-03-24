@@ -14,7 +14,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await axios.get('http://localhost:5001/api/users/me', {
+        const userRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setUser(userRes.data);

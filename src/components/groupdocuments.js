@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 
 const GroupDocuments = ({ groupId }) => {
   const [documents, setDocuments] = useState([]);
@@ -39,9 +39,7 @@ useEffect(() => {
   
       try {
         console.log("Fetching documents for group:", groupId);
-        const res = await axios.get(`/api/documents/${groupId}/documents`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await axios.get(`/api/documents/${groupId}/documents`);
   
         console.log("Response:", res.data);
   

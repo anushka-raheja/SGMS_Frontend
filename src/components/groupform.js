@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 
 const GroupForm = () => {
   const [formData, setFormData] = useState({
@@ -12,11 +12,7 @@ const GroupForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/groups', formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const res = await axios.post('/api/groups', formData);
       
       alert('Group created successfully!');
       window.location.reload();

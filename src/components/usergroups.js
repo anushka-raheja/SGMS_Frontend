@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { Link } from 'react-router-dom';
 
 const UserGroups = () => {
@@ -17,10 +17,7 @@ const UserGroups = () => {
           return;
         }
 
-        const res = await axios.get('/api/groups/my-groups', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
+        const res = await axios.get('/api/groups/my-groups');
         setUserGroups(res.data);
       } catch (err) {
         console.error('Failed to fetch groups:', {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 
 const AdminDashboard = () => {
   const [requests, setRequests] = useState([]);
@@ -7,9 +7,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await axios.get('/api/groups/admin/requests', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await axios.get('/api/groups/admin/requests');
         setRequests(res.data);
       } catch (err) {
         console.error('Failed to fetch requests:', err);
@@ -20,9 +18,7 @@ const AdminDashboard = () => {
 
   const handleApprove = async (groupId, userId) => {
     try {
-      await axios.post(`/api/groups/${groupId}/approve/${userId}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.post(`/api/groups/${groupId}/approve/${userId}`);
       setRequests(requests.map(group => 
         group._id === groupId ? 
         { ...group, joinRequests: group.joinRequests.filter(u => u._id !== userId) } 

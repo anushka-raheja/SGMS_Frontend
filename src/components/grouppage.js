@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { useParams } from 'react-router-dom';
 import GroupDocuments from './groupdocuments';
 
@@ -10,9 +10,7 @@ const GroupPage = () => {
   useEffect(() => {
     const fetchGroup = async () => {
       try {
-        const res = await axios.get(`/api/groups/${groupId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await axios.get(`/api/groups/${groupId}`);
         setGroup(res.data);
       } catch (err) {
         console.error('Fetch error:', err);

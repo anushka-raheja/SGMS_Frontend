@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 
 const GoalsDash = () => {
   const [goals, setGoals] = useState([]);
@@ -12,9 +12,7 @@ const GoalsDash = () => {
 
   const fetchGoals = async () => {
     try {
-      const res = await axios.get('/api/goals', {
-        headers:{ Authorization:`Bearer ${localStorage.getItem('token')}` }
-      });
+      const res = await axios.get('/api/goals');
       setGoals(res.data);
     } catch(err) {
       console.error('Error fetching goals:', err);
@@ -27,14 +25,8 @@ const GoalsDash = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post('/api/goals', newGoal, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-
-      // Add the newly created goal to the state for instant update
+      const res = await axios.post('/api/goals', newGoal);
       setGoals(prevGoals => [...prevGoals, res.data]);
-
-      // Reset form fields
       setNewGoal({ title: '', description: '', deadline: '' });
       setShowForm(false);
     } catch (err) {
@@ -44,9 +36,7 @@ const GoalsDash = () => {
 
   const updateProgress = async (goalId, progressValue) => {
     try{
-      await axios.put(`/api/goals/${goalId}`,{ progress:progressValue },{
-        headers:{ Authorization:`Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.put(`/api/goals/${goalId}`,{ progress:progressValue });
       fetchGoals();
     }catch(err){
       console.error('Error updating progress:', err);
