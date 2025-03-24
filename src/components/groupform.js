@@ -12,7 +12,7 @@ const GroupForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/groups', formData);
+      await axios.post('/api/groups', formData);
       
       alert('Group created successfully!');
       window.location.reload();

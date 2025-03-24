@@ -74,7 +74,7 @@ useEffect(() => {
     formData.append('file', selectedFile);
 
     try {
-      const res = await axios.post(`/api/documents/${groupId}/upload`, formData, {
+      await axios.post(`/api/documents/${groupId}/upload`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data'

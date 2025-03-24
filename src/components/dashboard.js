@@ -9,7 +9,6 @@ import GoalsDash from './goalsdash';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
-  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
