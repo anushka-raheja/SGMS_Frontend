@@ -5,6 +5,7 @@ import Home from "./components/home";
 import Dashboard from "./components/dashboard"
 import GroupForm from "./components/groupform"
 import GroupPage from "./components/grouppage";
+import Profile from "./components/profile";
 
 const App = () => (
   <Router>
@@ -15,6 +16,7 @@ const App = () => (
       <Route path="/dashboard" element= {<Dashboard/>}/>
       <Route path="/create-group" element={<GroupForm />} />
       <Route path="/groups/:groupId" element={<GroupPage />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   </Router>
 );

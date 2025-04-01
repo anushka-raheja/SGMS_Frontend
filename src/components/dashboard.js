@@ -31,6 +31,7 @@ const Dashboard = () => {
           <header className="profile-header">
             <h2>Welcome, {user.name}</h2>
             <p className="email">Email: {user.email}</p>
+            <Link to="/profile" className="profile-link">View/Edit Profile</Link>
           </header>
         </div>
       )}
