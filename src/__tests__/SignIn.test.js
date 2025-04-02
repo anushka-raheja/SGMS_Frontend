@@ -3,20 +3,16 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import SignIn from '../components/signin';
 
-// Mock axios
-const mockAxiosInstance = {
+// Mock axios with a factory function
+jest.mock('../utils/axios', () => ({
   post: jest.fn(),
   get: jest.fn(),
   put: jest.fn(),
   delete: jest.fn()
-};
+}));
 
-jest.mock('../utils/axios', () => {
-  const axios = {
-    create: jest.fn(() => mockAxiosInstance)
-  };
-  return axios;
-});
+// Import the mocked module
+import axios from '../utils/axios';
 
 // Mock localStorage
 const localStorageMock = {
@@ -39,7 +35,7 @@ describe('SignIn Component', () => {
     jest.clearAllMocks();
     localStorageMock.setItem.mockClear();
     mockNavigate.mockClear();
-    mockAxiosInstance.post.mockClear();
+    axios.post.mockClear();
   });
 
   it('renders signin form', () => {
@@ -62,7 +58,7 @@ describe('SignIn Component', () => {
         message: 'Login successful'
       }
     };
-    mockAxiosInstance.post.mockResolvedValueOnce(mockResponse);
+    axios.post.mockResolvedValueOnce(mockResponse);
 
     render(
       <BrowserRouter>
@@ -76,10 +72,13 @@ describe('SignIn Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), {
       target: { value: 'password123' }
     });
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    
+    // Submit the form instead of just clicking the button
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/auth/signin', {
+      expect(axios.post).toHaveBeenCalledWith('/api/auth/signin', {
         email: 'test@example.com',
         password: 'password123'
       });
@@ -91,7 +90,7 @@ describe('SignIn Component', () => {
 
   it('handles signin error', async () => {
     const errorMessage = 'Invalid credentials';
-    mockAxiosInstance.post.mockRejectedValueOnce({
+    axios.post.mockRejectedValueOnce({
       response: { data: { message: errorMessage } }
     });
 
@@ -107,7 +106,10 @@ describe('SignIn Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), {
       target: { value: 'wrongpassword' }
     });
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    
+    // Submit the form instead of just clicking the button
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
 
     await waitFor(() => {
       expect(localStorageMock.setItem).not.toHaveBeenCalled();
