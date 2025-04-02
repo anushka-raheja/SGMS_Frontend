@@ -1,71 +1,85 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { screen, waitFor } from '../test-utils';
+import { renderWithRouter } from '../test-utils';
+import '@testing-library/jest-dom';
 import GroupPage from '../components/grouppage';
-
-// Mock axios
-jest.mock('../utils/axios', () => ({
-  get: jest.fn()
-}));
-
-// Import the mocked axios
 import axios from '../utils/axios';
 
-// Mock GroupDocuments component
-jest.mock('../components/groupdocuments', () => {
-  return function MockGroupDocuments() {
-    return <div data-testid="group-documents">Group Documents</div>;
-  };
-});
+// Mock the axios module
+jest.mock('../utils/axios', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn()
+}));
+
+// Mock the useParams hook
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({ groupId: 'mock-group-id' })
+}));
+
+// Mock the child components
+jest.mock('../components/groupsessions', () => () => <div data-testid="mock-sessions">Sessions Mock</div>);
+jest.mock('../components/groupdocuments', () => () => <div data-testid="mock-documents">Documents Mock</div>);
 
 describe('GroupPage Component', () => {
-  const mockGroup = {
-    _id: '123',
-    name: 'Test Group',
-    subject: 'Computer Science',
-    members: [
-      { _id: '1', name: 'User 1' },
-      { _id: '2', name: 'User 2' }
-    ]
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('renders loading state initially', () => {
-    render(
-      <MemoryRouter initialEntries={['/groups/123']}>
-        <Routes>
-          <Route path="/groups/:groupId" element={<GroupPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
+  test('shows loading state initially', () => {
+    // Make the axios request never resolve to keep the component in loading state
+    axios.get.mockImplementation(() => new Promise(() => {}));
     
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    renderWithRouter(<GroupPage />);
+    
+    expect(screen.getByText(/Loading group information/i)).toBeInTheDocument();
   });
 
-  test('renders group information after successful fetch', async () => {
-    // Mock successful API response
-    axios.get.mockResolvedValueOnce({ data: mockGroup });
-
-    render(
-      <MemoryRouter initialEntries={['/groups/123']}>
-        <Routes>
-          <Route path="/groups/:groupId" element={<GroupPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    // Wait for loading state to disappear
-    await waitFor(() => {
-      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+  test('shows error state when API call fails', async () => {
+    // Mock a failed API call
+    axios.get.mockRejectedValueOnce({ 
+      response: { data: { error: 'Group not found or access denied' } } 
     });
+    
+    renderWithRouter(<GroupPage />);
+    
+    await waitFor(() => {
+      expect(screen.getByText(/Group not found or access denied/i)).toBeInTheDocument();
+    });
+  });
 
-    // Check if group information is displayed
-    expect(screen.getByText('Test Group')).toBeInTheDocument();
-    expect(screen.getByText('Subject: Computer Science')).toBeInTheDocument();
-    expect(screen.getByText('Members: 2')).toBeInTheDocument();
-    expect(screen.getByTestId('group-documents')).toBeInTheDocument();
+  test('shows error when response is undefined', async () => {
+    // Mock undefined response
+    axios.get.mockResolvedValueOnce(undefined);
+    
+    renderWithRouter(<GroupPage />);
+    
+    await waitFor(() => {
+      expect(screen.getByText(/No data received from server/i)).toBeInTheDocument();
+    });
+  });
+
+  test('renders group data when API call succeeds', async () => {
+    // Mock a successful API call
+    const mockGroup = {
+      _id: 'mock-group-id',
+      name: 'Test Group',
+      subject: 'Computer Science',
+      members: ['user1', 'user2', 'user3']
+    };
+    
+    axios.get.mockResolvedValueOnce({ data: mockGroup });
+    
+    renderWithRouter(<GroupPage />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Test Group')).toBeInTheDocument();
+      expect(screen.getByText(/Computer Science/i)).toBeInTheDocument();
+      expect(screen.getByText(/Members:/i)).toBeInTheDocument();
+      expect(screen.getByTestId('mock-sessions')).toBeInTheDocument();
+      expect(screen.getByTestId('mock-documents')).toBeInTheDocument();
+    });
   });
 });

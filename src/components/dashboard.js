@@ -6,6 +6,7 @@ import GroupsList from './grouplist';
 import UserGroups from '../components/usergroups';
 import AdminDashboard from './admindashboard';
 import GoalsDash from './goalsdash';
+import DashboardSessions from './dashboardsessions';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -50,6 +51,8 @@ const Dashboard = () => {
           <div className="dashboard-right">
             <h2 className="section-title">Study Goals</h2>
             <GoalsDash/>
+
+            <DashboardSessions />
 
             <div className="admin-section">
               <h2 className="section-title">Admin Dashboard</h2>

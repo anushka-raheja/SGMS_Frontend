@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/axios';
-import '../styles/Profile.css';
+import '../App.css';
 
 const Profile = () => {
   const [profile, setProfile] = useState({

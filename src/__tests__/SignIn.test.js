@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { screen, fireEvent, waitFor } from '../test-utils';
+import { renderWithRouter } from '../test-utils';
 import SignIn from '../components/signin';
 
 // Mock axios with a factory function
@@ -39,11 +39,7 @@ describe('SignIn Component', () => {
   });
 
   it('renders signin form', () => {
-    render(
-      <BrowserRouter>
-        <SignIn />
-      </BrowserRouter>
-    );
+    renderWithRouter(<SignIn />);
 
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
@@ -60,11 +56,7 @@ describe('SignIn Component', () => {
     };
     axios.post.mockResolvedValueOnce(mockResponse);
 
-    render(
-      <BrowserRouter>
-        <SignIn />
-      </BrowserRouter>
-    );
+    renderWithRouter(<SignIn />);
 
     fireEvent.change(screen.getByPlaceholderText('Email'), {
       target: { value: 'test@example.com' }
@@ -94,11 +86,7 @@ describe('SignIn Component', () => {
       response: { data: { message: errorMessage } }
     });
 
-    render(
-      <BrowserRouter>
-        <SignIn />
-      </BrowserRouter>
-    );
+    renderWithRouter(<SignIn />);
 
     fireEvent.change(screen.getByPlaceholderText('Email'), {
       target: { value: 'test@example.com' }

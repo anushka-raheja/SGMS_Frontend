@@ -631,4 +631,569 @@ form {
 .update-button:hover {
     background-color: #6e7276;
 }
+
+/* Dashboard Sessions Styles - Moved from dashboardsessions.css */
+.dashboard-sessions {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.sessions-title {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.sessions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.session-card {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 15px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  border-left: 4px solid #4a6fa5;
+}
+
+.session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.session-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.session-group a {
+  color: #4a6fa5;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.session-group a:hover {
+  text-decoration: underline;
+}
+
+.session-details {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.session-details p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.session-date {
+  font-weight: 500;
+}
+
+.session-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.join-btn,
+.leave-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.join-btn {
+  background-color: #4a6fa5;
+  color: white;
+}
+
+.leave-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.view-link {
+  padding: 6px 12px;
+  border: 1px solid #4a6fa5;
+  border-radius: 4px;
+  color: #4a6fa5;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.no-sessions {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+  font-style: italic;
+}
+
+.more-sessions {
+  text-align: center;
+  padding: 15px 0 5px;
+}
+
+.view-all-link {
+  color: #4a6fa5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+/* Group Sessions Styles - Moved from groupsessions.css */
+.group-sessions {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.sessions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sessions-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #333;
+}
+
+.create-session-btn {
+  background-color: #4a6fa5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.create-session-btn:hover {
+  background-color: #3a5982;
+}
+
+.session-form-container {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.session-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.session-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.session-form .form-group:nth-child(2) {
+  grid-column: span 2;
+}
+
+.session-form label {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.session-form input,
+.session-form textarea {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.session-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.submit-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.sessions-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.session-card.completed {
+  background-color: #d4edda;
+  border-left: 4px solid #28a745;
+}
+
+.session-card.cancelled {
+  background-color: #f8d7da;
+  border-left: 4px solid #dc3545;
+}
+
+.session-card.scheduled {
+  border-left: 4px solid #4a6fa5;
+}
+
+.session-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.session-status.scheduled {
+  background-color: #cfe2ff;
+  color: #0d6efd;
+}
+
+.session-status.completed {
+  background-color: #d1e7dd;
+  color: #198754;
+}
+
+.session-status.cancelled {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.session-description {
+  margin-bottom: 10px !important;
+  color: #333 !important;
+}
+
+.attendee-list {
+  display: block;
+  margin-top: 5px;
+  font-style: italic;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .session-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .session-form .form-group:nth-child(2) {
+    grid-column: span 1;
+  }
+  
+  .form-actions {
+    grid-column: span 1;
+  }
+  
+  .sessions-list {
+    grid-template-columns: 1fr;
+  }
+}
+  
+/* Profile Styles - Moved from Profile.css */
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-view {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-section {
+  margin: 20px 0;
+  padding: 15px;
+  background: white;
+  border-radius: 6px;
+}
+
+.profile-section h4 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.courses-input {
+  display: flex;
+  gap: 10px;
+}
+
+.courses-input input {
+  flex: 1;
+}
+
+select, input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-top: 20px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #f8f9fa;
+  margin: 4px 0;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+li button {
+  padding: 4px 8px;
+  font-size: 12px;
+  background: #dc3545;
+}
+
+li button:hover {
+  background: #c82333;
+}
+
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 10px;
+  }
+  
+  .courses-input {
+    flex-direction: column;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  button {
+    width: 100%;
+  }
+}
+
+/* Group Page Styles - Moved from grouppage.css */
+.group-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.group-header {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.group-header h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.group-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.group-info p {
+  margin: 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.group-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.group-section {
+  margin-bottom: 20px;
+}
+
+.loading, .error-message, .no-group {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.loading {
+  color: #777;
+}
+
+.no-group {
+  color: #856404;
+  background-color: #fff3cd;
+}
+
+@media (min-width: 768px) {
+  .group-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 992px) {
+  .group-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Group Details Styles - Moved from GroupDetails.css */
+.group-details-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.privacy-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.privacy-badge.public {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.privacy-badge.private {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+
+.members-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.members-section h2 {
+  margin-top: 0;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.member-card {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  position: relative;
+}
+
+.member-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.member-email {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.admin-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
   

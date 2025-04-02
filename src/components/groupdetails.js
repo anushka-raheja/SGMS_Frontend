@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../utils/axios';
-import '../styles/GroupDetails.css';
+import '../App.css';
 
 const GroupDetails = () => {
   const { groupId } = useParams();

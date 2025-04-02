@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '../test-utils';
+import { renderWithRouter } from '../test-utils';
 import '@testing-library/jest-dom';
-import { BrowserRouter } from 'react-router-dom';
 import GroupsList from '../components/grouplist';
 import axiosInstance from '../utils/axios';
 
@@ -72,21 +72,13 @@ describe('GroupsList Component', () => {
   });
 
   test('renders GroupsList component correctly', () => {
-    render(
-      <BrowserRouter>
-        <GroupsList />
-      </BrowserRouter>
-    );
+    renderWithRouter(<GroupsList />);
     
     // expect(screen.getByText(/Available Study Groups/i)).toBeInTheDocument();
   });
 
   test('displays loading state initially', () => {
-    render(
-      <BrowserRouter>
-        <GroupsList />
-      </BrowserRouter>
-    );
+    renderWithRouter(<GroupsList />);
     
     expect(screen.getByText(/Loading groups/i)).toBeInTheDocument();
   });
@@ -94,11 +86,7 @@ describe('GroupsList Component', () => {
   test('displays groups when data is loaded successfully', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
-    render(
-      <BrowserRouter>
-        <GroupsList />
-      </BrowserRouter>
-    );
+    renderWithRouter(<GroupsList />);
 
     // Wait for groups to load
     const group1 = await screen.findByText('Test Group 1');
@@ -113,11 +101,7 @@ describe('GroupsList Component', () => {
   test('displays error message when API call fails', async () => {
     axiosInstance.get.mockRejectedValueOnce(new Error('Failed to fetch'));
 
-    render(
-      <BrowserRouter>
-        <GroupsList />
-      </BrowserRouter>
-    );
+    renderWithRouter(<GroupsList />);
 
     // Wait for error message
     const errorMessage = await screen.findByText(/Error: Failed to load groups/i);
@@ -127,11 +111,7 @@ describe('GroupsList Component', () => {
   test('displays "No groups available" message when no groups exist', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: [] });
 
-    render(
-      <BrowserRouter>
-        <GroupsList />
-      </BrowserRouter>
-    );
+    renderWithRouter(<GroupsList />);
 
     // Wait for the message to appear
     const message = await screen.findByText(/No study groups available to join/i);
@@ -141,11 +121,7 @@ describe('GroupsList Component', () => {
   test('renders group details correctly', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
-    render(
-      <BrowserRouter>
-        <GroupsList />
-      </BrowserRouter>
-    );
+    renderWithRouter(<GroupsList />);
 
     // Wait for groups to load
     await screen.findByText('Test Group 1');
@@ -158,11 +134,7 @@ describe('GroupsList Component', () => {
   test('displays public/private badges correctly', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
-    render(
-      <BrowserRouter>
-        <GroupsList />
-      </BrowserRouter>
-    );
+    renderWithRouter(<GroupsList />);
 
     // Wait for groups to load
     await screen.findByText('Test Group 1');

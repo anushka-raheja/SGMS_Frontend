@@ -1,15 +1,10 @@
-import React, { act } from 'react';
-import { render, screen } from "@testing-library/react";
+import React from 'react';
+import { renderWithRouter, screen } from "../test-utils";
 import "@testing-library/jest-dom";
-import { BrowserRouter } from 'react-router-dom';
 import Home from "../components/home";
 
 test("renders Home component correctly", () => {
-  render(
-    <BrowserRouter>
-      <Home />
-    </BrowserRouter>
-  );
+  renderWithRouter(<Home />);
   
   expect(screen.getByText(/Welcome to SGMS/i)).toBeInTheDocument();
   expect(screen.getByText(/Sign Up/i)).toBeInTheDocument();
