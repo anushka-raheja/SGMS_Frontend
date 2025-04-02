@@ -5,19 +5,22 @@ import { Link } from 'react-router-dom';
 const UserGroups = () => {
   const [userGroups, setUserGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Correct useEffect implementation
   useEffect(() => {
     const fetchUserGroups = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
           console.error('No authentication token found');
+          setError('Please sign in to view your groups');
           setLoading(false);
           return;
         }
 
+        console.log('Fetching user groups...');
         const res = await axios.get('/api/groups/my-groups');
+        console.log('User groups response:', res.data);
         setUserGroups(res.data);
       } catch (err) {
         console.error('Failed to fetch groups:', {
@@ -25,13 +28,18 @@ const UserGroups = () => {
           data: err.response?.data,
           message: err.message
         });
+        setError(err.response?.data?.error || 'Failed to load your groups');
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserGroups();
-  }, []); // Empty array = runs once on mount
+  }, []);
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
 
   return (
     <div className="user-groups">

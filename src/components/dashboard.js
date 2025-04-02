@@ -1,6 +1,6 @@
 // pages/Dashboard.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { Link } from "react-router-dom";
 import GroupsList from './grouplist';
 import UserGroups from '../components/usergroups';
@@ -13,12 +13,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/me`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const userRes = await axios.get('/api/users/me');
         setUser(userRes.data);
       } catch (err) {
-        console.error('Failed to load data');
+        console.error('Failed to load data:', err);
       }
     };
     fetchData();
