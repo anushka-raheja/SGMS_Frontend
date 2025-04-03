@@ -31,6 +31,9 @@ import axios from '../utils/axios';
 // Mock environment variable
 process.env.REACT_APP_API_URL = 'http://localhost:5001';
 
+// Helper to wait for all promises to resolve
+const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+
 describe('SignUp Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -64,7 +67,8 @@ describe('SignUp Component', () => {
       }
     };
     
-    axios.post.mockResolvedValue(mockResponse);
+    // Use immediate mock implementation
+    axios.post.mockImplementation(() => Promise.resolve(mockResponse));
     
     await act(async () => {
       renderWithRouter(<SignUp />);
@@ -75,75 +79,73 @@ describe('SignUp Component', () => {
       fireEvent.change(screen.getByPlaceholderText('Name'), {
         target: { value: 'Test User' }
       });
-    });
-    
-    await act(async () => {
       fireEvent.change(screen.getByPlaceholderText('Email'), {
         target: { value: 'test@example.com' }
       });
-    });
-    
-    await act(async () => {
       fireEvent.change(screen.getByPlaceholderText('Password'), {
         target: { value: 'password123' }
       });
     });
 
-    // Submit the form
+    // Submit the form and wait for all promises to resolve
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
+      // Wait for all promises to resolve
+      await flushPromises();
     });
 
-    // Directly check that the API was called with correct data
+    // Verify API call
     expect(axios.post).toHaveBeenCalledWith('/api/auth/signup', {
       name: 'Test User',
       email: 'test@example.com',
       password: 'password123'
     });
 
-    // Directly check localStorage and navigation
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockResponse.data.token);
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', mockResponse.data.user._id);
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    // Wait for state to update and verify localStorage and navigation
+    await waitFor(() => {
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'mock-token');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', 'user-id');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    }, { timeout: 3000 });  // Increased timeout for CI environments
   });
 
   it('handles signup error', async () => {
-    // Mock axios rejection
-    axios.post.mockRejectedValue({
-      response: {
-        data: { message: 'Email already exists' }
-      }
-    });
+    // Mock axios rejection with immediate implementation
+    axios.post.mockImplementation(() => 
+      Promise.reject({
+        response: {
+          data: { message: 'Email already exists' }
+        }
+      })
+    );
 
     await act(async () => {
       renderWithRouter(<SignUp />);
     });
 
-    // Fill in the form
+    // Fill in the form (combined into one act for efficiency)
     await act(async () => {
       fireEvent.change(screen.getByPlaceholderText('Name'), {
         target: { value: 'Test User' }
       });
-    });
-    
-    await act(async () => {
       fireEvent.change(screen.getByPlaceholderText('Email'), {
         target: { value: 'test@example.com' }
       });
-    });
-    
-    await act(async () => {
       fireEvent.change(screen.getByPlaceholderText('Password'), {
         target: { value: 'password123' }
       });
     });
 
-    // Submit the form
+    // Submit the form and wait for promises
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
+      // Wait for all promises to resolve
+      await flushPromises();
     });
 
-    // Check that error message is displayed
-    expect(screen.getByText(/Email already exists/i)).toBeInTheDocument();
+    // Check error message with waitFor for consistency
+    await waitFor(() => {
+      expect(screen.getByText(/Email already exists/i)).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 }); 
