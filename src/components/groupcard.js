@@ -30,12 +30,6 @@ const GroupCard = ({
     return member?.toString() === currentUserId?.toString();
   });
   console.log('Final isMember Result:', isMember);
-  const isAdmin = admins.some(admin => {
-    if (typeof admin === 'object') {
-      return admin._id?.toString() === currentUserId?.toString();
-    }
-    return admin?.toString() === currentUserId?.toString();
-  });
 
   const adminName = admins[0]?.name || 'Unknown';
 
