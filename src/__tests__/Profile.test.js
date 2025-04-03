@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithRouter } from '../test-utils';
 import '@testing-library/jest-dom';
-import Profile from '../components/Profile';
+import Profile from '../components/profile';
 import axios from '../utils/axios';
 
 // Mock axios
