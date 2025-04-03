@@ -23,7 +23,7 @@ jest.mock('../utils/axios', () => {
 });
 
 import React from 'react';
-import { screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithRouter } from '../test-utils';
 import SignUp from '../components/signup';
 import axios from '../utils/axios';
@@ -31,22 +31,13 @@ import axios from '../utils/axios';
 // Mock environment variable
 process.env.REACT_APP_API_URL = 'http://localhost:5001';
 
-// Helper to wait for all promises to resolve
-const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
-
 describe('SignUp Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    localStorageMock.setItem.mockClear();
-    mockNavigate.mockClear();
-    axios.post.mockClear();
   });
 
-  it('renders signup form', async () => {
-    await act(async () => {
-      renderWithRouter(<SignUp />);
-    });
-
+  it('renders signup form', () => {
+    renderWithRouter(<SignUp />);
     expect(screen.getByPlaceholderText('Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
@@ -54,98 +45,123 @@ describe('SignUp Component', () => {
   });
 
   it('handles successful signup', async () => {
-    // Setup mock response to exactly match what the component expects
-    const mockResponse = {
+    // ARRANGE - Create a successful response
+    const successResponse = {
       data: {
         token: 'mock-token',
         user: {
           _id: 'user-id',
           name: 'Test User',
           email: 'test@example.com'
-        },
-        message: 'User created successfully'
+        }
       }
     };
     
-    // Use immediate mock implementation
-    axios.post.mockImplementation(() => Promise.resolve(mockResponse));
+    // Set up the API mock to resolve with our success response
+    axios.post.mockResolvedValue(successResponse);
     
-    await act(async () => {
-      renderWithRouter(<SignUp />);
+    // ACT - Render component
+    renderWithRouter(<SignUp />);
+    
+    // Fill the form
+    fireEvent.change(screen.getByPlaceholderText('Name'), {
+      target: { value: 'Test User' }
     });
-
-    // Fill in the form
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText('Name'), {
-        target: { value: 'Test User' }
-      });
-      fireEvent.change(screen.getByPlaceholderText('Email'), {
-        target: { value: 'test@example.com' }
-      });
-      fireEvent.change(screen.getByPlaceholderText('Password'), {
-        target: { value: 'password123' }
-      });
+    
+    fireEvent.change(screen.getByPlaceholderText('Email'), {
+      target: { value: 'test@example.com' }
     });
-
-    // Submit the form and wait for all promises to resolve
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
-      // Wait for all promises to resolve
-      await flushPromises();
+    
+    fireEvent.change(screen.getByPlaceholderText('Password'), {
+      target: { value: 'password123' }
     });
-
-    // Verify API call
-    expect(axios.post).toHaveBeenCalledWith('/api/auth/signup', {
-      name: 'Test User',
-      email: 'test@example.com',
-      password: 'password123'
-    });
-
-    // Wait for state to update and verify localStorage and navigation
+    
+    // Submit the form
+    fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
+    
+    // ASSERT - Check API call
     await waitFor(() => {
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'mock-token');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', 'user-id');
+      expect(axios.post).toHaveBeenCalledWith(
+        '/api/auth/signup',
+        {
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'password123'
+        }
+      );
+    });
+    
+    // Simple test - since we're mocking everything, verify the function was called 
+    // in any order with any arguments
+    await waitFor(() => {
+      // First check if function was called at all
+      expect(localStorageMock.setItem).toHaveBeenCalled();
+    });
+    
+    // Then check specific calls 
+    await waitFor(() => {
+      // Find the call with 'token' as first argument
+      const tokenCall = localStorageMock.setItem.mock.calls.find(
+        call => call[0] === 'token'
+      );
+      expect(tokenCall).toBeTruthy();
+      expect(tokenCall[1]).toBe('mock-token');
+      
+      // Find the call with 'userId' as first argument
+      const userIdCall = localStorageMock.setItem.mock.calls.find(
+        call => call[0] === 'userId'
+      );
+      expect(userIdCall).toBeTruthy();
+      expect(userIdCall[1]).toBe('user-id');
+    });
+    
+    // Check navigation
+    await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-    }, { timeout: 3000 });  // Increased timeout for CI environments
+    });
   });
 
   it('handles signup error', async () => {
-    // Mock axios rejection with immediate implementation
-    axios.post.mockImplementation(() => 
-      Promise.reject({
-        response: {
-          data: { message: 'Email already exists' }
+    // ARRANGE - Create an error response
+    const errorResponse = {
+      response: {
+        data: {
+          message: 'Email already exists'
         }
-      })
-    );
-
-    await act(async () => {
-      renderWithRouter(<SignUp />);
+      }
+    };
+    
+    // Set up the API mock to reject with our error
+    axios.post.mockRejectedValue(errorResponse);
+    
+    // ACT - Render component
+    renderWithRouter(<SignUp />);
+    
+    // Fill the form
+    fireEvent.change(screen.getByPlaceholderText('Name'), {
+      target: { value: 'Test User' }
     });
-
-    // Fill in the form (combined into one act for efficiency)
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText('Name'), {
-        target: { value: 'Test User' }
-      });
-      fireEvent.change(screen.getByPlaceholderText('Email'), {
-        target: { value: 'test@example.com' }
-      });
-      fireEvent.change(screen.getByPlaceholderText('Password'), {
-        target: { value: 'password123' }
-      });
+    
+    fireEvent.change(screen.getByPlaceholderText('Email'), {
+      target: { value: 'test@example.com' }
     });
-
-    // Submit the form and wait for promises
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
-      // Wait for all promises to resolve
-      await flushPromises();
+    
+    fireEvent.change(screen.getByPlaceholderText('Password'), {
+      target: { value: 'password123' }
     });
-
-    // Check error message with waitFor for consistency
+    
+    // Submit the form
+    fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
+    
+    // ASSERT - Check for error message
     await waitFor(() => {
-      expect(screen.getByText(/Email already exists/i)).toBeInTheDocument();
-    }, { timeout: 3000 });
+      expect(screen.getByText('Email already exists')).toBeInTheDocument();
+    });
+    
+    // Verify localStorage was NOT called
+    expect(localStorageMock.setItem).not.toHaveBeenCalled();
+    
+    // Verify navigation was NOT called
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 }); 
