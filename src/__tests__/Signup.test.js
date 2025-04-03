@@ -15,35 +15,18 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-// Mock axios properly with create method
-jest.mock('axios', () => {
-  const mockAxios = {
-    create: jest.fn(() => mockAxios),
-    post: jest.fn(),
-    get: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn(), eject: jest.fn() },
-      response: { use: jest.fn(), eject: jest.fn() }
-    }
-  };
-  return mockAxios;
-});
-
 // Mock our custom axios instance
 jest.mock('../utils/axios', () => {
   return {
-    post: jest.fn(),
-    get: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn()
+    post: jest.fn()
   };
 });
 
 import React from 'react';
-import { screen, fireEvent, waitFor } from '../test-utils';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithRouter } from '../test-utils';
 import SignUp from '../components/signup';
-import customAxios from '../utils/axios';
+import axios from '../utils/axios';
 
 // Mock environment variable
 process.env.REACT_APP_API_URL = 'http://localhost:5001';
@@ -63,15 +46,21 @@ describe('SignUp Component', () => {
   });
 
   it('handles successful signup', async () => {
-    // Mock successful response
+    // Setup mock response to match exactly what the userController.js returns
     const mockResponse = {
       data: {
         token: 'mock-token',
-        user: { _id: 'user-id', name: 'Test User', email: 'test@example.com' },
+        user: {
+          _id: 'user-id',
+          name: 'Test User',
+          email: 'test@example.com'
+        },
         message: 'User created successfully'
       }
     };
-    customAxios.post.mockResolvedValueOnce(mockResponse);
+    
+    // Setup axios mock to return our response
+    axios.post.mockResolvedValue(mockResponse);
     
     renderWithRouter(<SignUp />);
 
@@ -89,25 +78,32 @@ describe('SignUp Component', () => {
     // Submit the form
     fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
 
-    // Wait for the API call to complete
+    // Use waitFor with only one expectation to ensure stable testing
     await waitFor(() => {
-      expect(customAxios.post).toHaveBeenCalledWith(
-        '/api/auth/signup', 
-        {
-          name: 'Test User',
-          email: 'test@example.com',
-          password: 'password123'
-        }
-      );
+      expect(axios.post).toHaveBeenCalledWith('/api/auth/signup', {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123'
+      });
+    });
+
+    // Check localStorage and navigation in separate waitFor blocks
+    await waitFor(() => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'mock-token');
+    });
+    
+    await waitFor(() => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', 'user-id');
+    });
+    
+    await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
     });
   });
 
   it('handles signup error', async () => {
-    // Mock axios rejection
-    customAxios.post.mockRejectedValueOnce({
+    // Mock axios rejection with error structure from backend
+    axios.post.mockRejectedValue({
       response: {
         data: { message: 'Email already exists' }
       }

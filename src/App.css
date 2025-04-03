@@ -7,15 +7,22 @@ body {
     font-size: 0.95rem;
     line-height: 1.5;
 }
+.home-container{
+  text-align: center;
+  margin-top: 2rem;
+}
+.signin-container{
+  text-align: center;
+}
 form {
-    max-width: 400px; /* Restrict form width */
-    margin: 50px auto; /* Center the form horizontally and add vertical spacing */
-    padding: 20px; /* Add padding inside the form */
-    background-color: #f9f9f9; /* Light gray background */
-    border: 1px solid #ddd; /* Subtle border */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a shadow for depth */
-  }
+  max-width: 400px; /* Restrict form width */
+  margin: 0px auto; /* Center the form horizontally and add vertical spacing */
+  padding: 20px; /* Add padding inside the form */
+  background-color: #f9f9f9; /* Light gray background */
+  border: 1px solid #ddd; /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a shadow for depth */
+}
   
   /* Styling for input fields */
   input[type="text"],

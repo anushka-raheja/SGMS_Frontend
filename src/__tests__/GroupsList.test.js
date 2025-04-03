@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, fireEvent, waitFor } from '../test-utils';
+import { screen, fireEvent, waitFor, act } from '../test-utils';
 import { renderWithRouter } from '../test-utils';
 import '@testing-library/jest-dom';
 import GroupsList from '../components/grouplist';
@@ -71,29 +71,42 @@ describe('GroupsList Component', () => {
     });
   });
 
-  test('renders GroupsList component correctly', () => {
-    renderWithRouter(<GroupsList />);
+  test('renders GroupsList component correctly', async () => {
+    // Mock the API response before rendering
+    axiosInstance.get.mockResolvedValueOnce({ data: [] });
     
-    // expect(screen.getByText(/Available Study Groups/i)).toBeInTheDocument();
+    await act(async () => {
+      renderWithRouter(<GroupsList />);
+    });
+    
+    // No specific assertion needed for basic rendering
   });
 
-  test('displays loading state initially', () => {
-    renderWithRouter(<GroupsList />);
+  test('displays loading state initially', async () => {
+    // Delay the API response
+    axiosInstance.get.mockImplementation(() => 
+      new Promise(resolve => setTimeout(() => resolve({ data: [] }), 100))
+    );
     
-    expect(screen.getByText(/Loading groups/i)).toBeInTheDocument();
+    let getByTextFn;
+    await act(async () => {
+      const { getByText } = renderWithRouter(<GroupsList />);
+      getByTextFn = getByText;
+    });
+    
+    expect(getByTextFn(/Loading groups/i)).toBeInTheDocument();
   });
 
   test('displays groups when data is loaded successfully', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
-    renderWithRouter(<GroupsList />);
+    await act(async () => {
+      renderWithRouter(<GroupsList />);
+    });
 
     // Wait for groups to load
-    const group1 = await screen.findByText('Test Group 1');
-    const group2 = await screen.findByText('Test Group 2');
-
-    expect(group1).toBeInTheDocument();
-    expect(group2).toBeInTheDocument();
+    expect(screen.getByText('Test Group 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Group 2')).toBeInTheDocument();
     expect(screen.getByText('Mathematics')).toBeInTheDocument();
     expect(screen.getByText('Physics')).toBeInTheDocument();
   });
@@ -101,43 +114,42 @@ describe('GroupsList Component', () => {
   test('displays error message when API call fails', async () => {
     axiosInstance.get.mockRejectedValueOnce(new Error('Failed to fetch'));
 
-    renderWithRouter(<GroupsList />);
+    await act(async () => {
+      renderWithRouter(<GroupsList />);
+    });
 
     // Wait for error message
-    const errorMessage = await screen.findByText(/Error: Failed to load groups/i);
-    expect(errorMessage).toBeInTheDocument();
+    expect(screen.getByText(/Error: Failed to load groups/i)).toBeInTheDocument();
   });
 
   test('displays "No groups available" message when no groups exist', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: [] });
 
-    renderWithRouter(<GroupsList />);
+    await act(async () => {
+      renderWithRouter(<GroupsList />);
+    });
 
     // Wait for the message to appear
-    const message = await screen.findByText(/No study groups available to join/i);
-    expect(message).toBeInTheDocument();
+    expect(screen.getByText(/No study groups available to join/i)).toBeInTheDocument();
   });
 
   test('renders group details correctly', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
-    renderWithRouter(<GroupsList />);
-
-    // Wait for groups to load
-    await screen.findByText('Test Group 1');
+    await act(async () => {
+      renderWithRouter(<GroupsList />);
+    });
 
     // Check if group details are displayed
     expect(screen.getByText('Test Description 1')).toBeInTheDocument();
-    // expect(screen.getByText('2 members')).toBeInTheDocument();
   });
 
   test('displays public/private badges correctly', async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockGroups });
 
-    renderWithRouter(<GroupsList />);
-
-    // Wait for groups to load
-    await screen.findByText('Test Group 1');
+    await act(async () => {
+      renderWithRouter(<GroupsList />);
+    });
 
     // Check if privacy badges are displayed
     expect(screen.getByText('Public')).toBeInTheDocument();

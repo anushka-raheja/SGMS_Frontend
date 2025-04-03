@@ -1,3 +1,12 @@
+// Suppress ReactDOMTestUtils.act deprecation warning
+const originalError = console.error;
+console.error = (...args) => {
+  if (args[0].includes('Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`')) {
+    return;
+  }
+  originalError(...args);
+};
+
 // jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)

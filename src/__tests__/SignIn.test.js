@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, fireEvent, waitFor } from '../test-utils';
+import { screen, fireEvent, waitFor, act } from '../test-utils';
 import { renderWithRouter } from '../test-utils';
 import SignIn from '../components/signin';
 
@@ -38,8 +38,10 @@ describe('SignIn Component', () => {
     axios.post.mockClear();
   });
 
-  it('renders signin form', () => {
-    renderWithRouter(<SignIn />);
+  it('renders signin form', async () => {
+    await act(async () => {
+      renderWithRouter(<SignIn />);
+    });
 
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
@@ -56,52 +58,75 @@ describe('SignIn Component', () => {
     };
     axios.post.mockResolvedValueOnce(mockResponse);
 
-    renderWithRouter(<SignIn />);
-
-    fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'test@example.com' }
+    await act(async () => {
+      renderWithRouter(<SignIn />);
     });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'password123' }
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Email'), {
+        target: { value: 'test@example.com' }
+      });
+    });
+    
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Password'), {
+        target: { value: 'password123' }
+      });
     });
     
     // Submit the form instead of just clicking the button
-    const form = screen.getByRole('form');
-    fireEvent.submit(form);
-
-    await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledWith('/api/auth/signin', {
-        email: 'test@example.com',
-        password: 'password123'
-      });
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'mock-token');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', 'mock-user-id');
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    await act(async () => {
+      const form = screen.getByRole('form');
+      fireEvent.submit(form);
     });
+
+    // Verify the API call happened correctly
+    expect(axios.post).toHaveBeenCalledWith('/api/auth/signin', {
+      email: 'test@example.com',
+      password: 'password123'
+    });
+    
+    // Check side effects after the async operation completed
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'mock-token');
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', 'mock-user-id');
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
   });
 
   it('handles signin error', async () => {
     const errorMessage = 'Invalid credentials';
     axios.post.mockRejectedValueOnce({
-      response: { data: { message: errorMessage } }
+      response: { data: { error: errorMessage } }
     });
 
-    renderWithRouter(<SignIn />);
-
-    fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'test@example.com' }
+    await act(async () => {
+      renderWithRouter(<SignIn />);
     });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'wrongpassword' }
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Email'), {
+        target: { value: 'test@example.com' }
+      });
+    });
+    
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Password'), {
+        target: { value: 'wrongpassword' }
+      });
     });
     
     // Submit the form instead of just clicking the button
-    const form = screen.getByRole('form');
-    fireEvent.submit(form);
-
-    await waitFor(() => {
-      expect(localStorageMock.setItem).not.toHaveBeenCalled();
-      expect(mockNavigate).not.toHaveBeenCalled();
+    await act(async () => {
+      const form = screen.getByRole('form');
+      fireEvent.submit(form);
     });
+
+    // Wait for error state to be set
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    });
+    
+    // Verify that localStorage and navigation weren't called
+    expect(localStorageMock.setItem).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
