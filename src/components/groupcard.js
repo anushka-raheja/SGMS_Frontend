@@ -94,9 +94,6 @@ const GroupCard = ({
         </div>
       )}
 
-      {isAdmin && (
-        <div className="admin-badge">You are an admin</div>
-      )}
       <Link to={`/groups/${_id}`}>
         View Group Page
       </Link>

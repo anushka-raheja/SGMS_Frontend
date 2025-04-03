@@ -1,3 +1,6 @@
+// Set timeout for all tests
+jest.setTimeout(10000);
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -16,11 +19,9 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // Mock our custom axios instance
-jest.mock('../utils/axios', () => {
-  return {
-    post: jest.fn()
-  };
-});
+jest.mock('../utils/axios', () => ({
+  post: jest.fn()
+}));
 
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
@@ -38,20 +39,26 @@ describe('SignUp Component', () => {
     expect(screen.getByPlaceholderText('Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByText('Select Department')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
   });
 
   it('submits data to API when form is submitted', async () => {
-    // Simplest possible test - only verify API is called with correct data
-    axios.post.mockResolvedValue({
+    // Mock the API response
+    const mockResponse = {
       data: {
         token: 'mock-token',
         user: { _id: 'user-id' }
       }
-    });
+    };
+    
+    // Mock the API call
+    axios.post.mockResolvedValue(mockResponse);
     
     renderWithRouter(<SignUp />);
     
+    // Fill in the form
     fireEvent.change(screen.getByPlaceholderText('Name'), {
       target: { value: 'Test User' }
     });
@@ -63,23 +70,32 @@ describe('SignUp Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), {
       target: { value: 'password123' }
     });
+
+    // Select department from dropdown
+    const departmentSelect = screen.getByRole('combobox');
+    fireEvent.change(departmentSelect, {
+      target: { value: 'Computer Science & Engineering' }
+    });
     
+    // Submit the form
     fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
     
+    // Wait for the API call and verify
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalledWith(
         '/api/auth/signup',
         {
           name: 'Test User',
           email: 'test@example.com',
-          password: 'password123'
+          password: 'password123',
+          department: 'Computer Science & Engineering'
         }
       );
-    }, { timeout: 5000 });
+    });
   });
 
   it('displays error message when signup fails', async () => {
-    // Simple error test
+    // Mock the error response
     axios.post.mockRejectedValue({
       response: {
         data: { message: 'Email already exists' }
@@ -88,6 +104,7 @@ describe('SignUp Component', () => {
     
     renderWithRouter(<SignUp />);
     
+    // Fill in the form
     fireEvent.change(screen.getByPlaceholderText('Name'), {
       target: { value: 'Test User' }
     });
@@ -99,11 +116,19 @@ describe('SignUp Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Password'), {
       target: { value: 'password123' }
     });
+
+    // Select department from dropdown
+    const departmentSelect = screen.getByRole('combobox');
+    fireEvent.change(departmentSelect, {
+      target: { value: 'Computer Science & Engineering' }
+    });
     
+    // Submit the form
     fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
     
+    // Wait for error message
     await waitFor(() => {
       expect(screen.getByText('Email already exists')).toBeInTheDocument();
-    }, { timeout: 5000 });
+    });
   });
 }); 
