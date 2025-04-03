@@ -7,6 +7,12 @@ const GroupsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [joiningId, setJoiningId] = useState(null);
+  const [filters, setFilters] = useState({
+    subject: '',
+    department: ''
+  });
+  const [subjectOptions, setSubjectOptions] = useState([]);
+  const [departmentOptions, setDepartmentOptions] = useState([]);
   
   // Get current user ID from localStorage
   const currentUserId = localStorage.getItem('userId');
@@ -16,6 +22,13 @@ const GroupsList = () => {
     try {
       const response = await axios.get('/api/groups/list');
       setGroups(response.data);
+      
+      // Extract unique subjects and departments for filter options
+      const subjects = [...new Set(response.data.map(group => group.subject))];
+      const departments = [...new Set(response.data.map(group => group.department || 'General'))];
+      
+      setSubjectOptions(subjects);
+      setDepartmentOptions(departments);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load groups');
     } finally {
@@ -23,10 +36,32 @@ const GroupsList = () => {
     }
   };
 
-  // 2. Use it in useEffect
+  // Use it in useEffect
   useEffect(() => {
     fetchGroups();
   }, []);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({
+      ...filters,
+      [name]: value
+    });
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      subject: '',
+      department: ''
+    });
+  };
+
+  // Apply filters to the groups
+  const filteredGroups = groups.filter(group => {
+    const matchesSubject = !filters.subject || group.subject === filters.subject;
+    const matchesDepartment = !filters.department || (group.department || 'General') === filters.department;
+    return matchesSubject && matchesDepartment;
+  });
 
   // Handle join group functionality
   const handleJoinGroup = async (groupId) => {
@@ -64,7 +99,7 @@ const GroupsList = () => {
     return <div className="loading">Loading groups...</div>;
   }
 
-  if (error) {
+  if (error && typeof error === 'string') {
     return <div className="error">Error: {error}</div>;
   }
 
@@ -72,23 +107,76 @@ const GroupsList = () => {
     <div className="groups-list">
       <h2>Available Study Groups</h2>
       
-      <div className="groups-grid">
-        {groups.map(group => (
-          <GroupCard
-            key={group._id}
-            group={group}
-            currentUserId={currentUserId}
-            onJoinGroup={handleJoinGroup}
-            onJoinRequest={handleJoinRequest}
-            joiningId={joiningId}
-            error={error}
-          />
-        ))}
-      </div>
-      
-      {groups.length === 0 && (
-        <p className="no-groups">No study groups available to join.</p>
+      {groups.length > 0 && (
+        <div className="filter-controls">
+          <div className="filter-row">
+            <div className="filter-item">
+              <label htmlFor="subject-filter">Subject:</label>
+              <select
+                id="subject-filter"
+                name="subject"
+                value={filters.subject}
+                onChange={handleFilterChange}
+              >
+                <option value="">All Subjects</option>
+                {subjectOptions.map(subject => (
+                  <option key={subject} value={subject}>{subject}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="filter-item">
+              <label htmlFor="department-filter">Department:</label>
+              <select
+                id="department-filter"
+                name="department"
+                value={filters.department}
+                onChange={handleFilterChange}
+              >
+                <option value="">All Departments</option>
+                {departmentOptions.map(department => (
+                  <option key={department} value={department}>{department}</option>
+                ))}
+              </select>
+            </div>
+            
+            <button 
+              className="reset-filter-btn"
+              onClick={resetFilters}
+              disabled={!filters.subject && !filters.department}
+            >
+              Reset Filters
+            </button>
+          </div>
+          
+          <div className="filter-results">
+            Showing {filteredGroups.length} of {groups.length} groups
+          </div>
+        </div>
       )}
+      
+      <div className="groups-grid">
+        {filteredGroups.length > 0 ? (
+          filteredGroups.map(group => (
+            <GroupCard
+              key={group._id}
+              group={group}
+              currentUserId={currentUserId}
+              onJoinGroup={handleJoinGroup}
+              onJoinRequest={handleJoinRequest}
+              joiningId={joiningId}
+              error={error}
+            />
+          ))
+        ) : (
+          <p className="no-groups">
+            {groups.length > 0 
+              ? <>No groups match your filters. <button onClick={resetFilters}>Clear filters</button></>
+              : 'No study groups available to join.'
+            }
+          </p>
+        )}
+      </div>
     </div>
   );
 };

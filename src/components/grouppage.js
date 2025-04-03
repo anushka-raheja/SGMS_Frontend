@@ -59,6 +59,7 @@ const GroupPage = () => {
         <h2>{group.name}</h2>
         <div className="group-info">
           <p><strong>Subject:</strong> {group.subject}</p>
+          <p><strong>Department:</strong> {group.department || 'General'}</p>
           {group.members && (
             <p><strong>Members:</strong> {group.members.length}</p>
           )}

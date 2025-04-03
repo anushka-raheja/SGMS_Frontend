@@ -7,58 +7,6 @@ body {
     font-size: 0.95rem;
     line-height: 1.5;
 }
-/* 
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #444242;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-  
-div {
-    text-align: center;
-}
-  
-h1 {
-    color: #444242;
-    font-size: 2rem;
-    font-weight: 600;
-}
-
-h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #444242;
-}
-
-h3 {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #444242;
-}
-
-h4 {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #444242;
-}
-  
-a {
-    text-decoration: none;
-    color: #444242;
-    font-size: 0.95rem;
-    margin: 0 10px;
-    transition: color 0.2s;
-}
-  
-a:hover {
-    color: #6e7276;
-}
-
-/* Styling for the form container */
 form {
     max-width: 400px; /* Restrict form width */
     margin: 50px auto; /* Center the form horizontally and add vertical spacing */
@@ -1195,5 +1143,77 @@ li button:hover {
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+/* Group Department Styles */
+.group-department {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 5px 0;
+}
+
+.group-details {
+  margin-bottom: 10px;
+}
+
+/* Filter Controls Styles */
+.filter-controls {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-item label {
+  font-weight: 500;
+  color: #555;
+}
+
+.filter-item select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  min-width: 150px;
+}
+
+.reset-filter-btn {
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reset-filter-btn:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.reset-filter-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.filter-results {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
 }
   

@@ -7,6 +7,7 @@ const GroupCard = ({
     _id,
     name,
     subject,
+    department = 'General',
     members = [],
     admins = [],
     joinRequests = [],
@@ -48,7 +49,10 @@ const GroupCard = ({
       </div>
 
       <div className="group-content">
-        <p className="group-subject">{subject}</p>
+        <div className="group-details">
+          <p className="group-subject">Subject: {subject}</p>
+          <p className="group-department">Department: {department}</p>
+        </div>
         <p className="group-description">{isPublic ? description : 'Join to view details'}</p>
         
         <div className="group-meta">

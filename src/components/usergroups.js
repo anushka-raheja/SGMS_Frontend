@@ -58,7 +58,10 @@ const UserGroups = () => {
               </div>
               
               <div className="group-content">
-                <p className="group-subject">Subject: {group.subject}</p>
+                <div className="group-details">
+                  <p className="group-subject">Subject: {group.subject}</p>
+                  <p className="group-department">Department: {group.department || 'General'}</p>
+                </div>
                 <p className="group-description">{group.description}</p>
                 
                 <div className="group-meta">

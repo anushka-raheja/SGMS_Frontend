@@ -49,10 +49,11 @@ const Dashboard = () => {
           </div>
 
           <div className="dashboard-right">
+            <h2 className="section-title">Upcoming Study Sessions</h2>
+            <DashboardSessions />
+
             <h2 className="section-title">Study Goals</h2>
             <GoalsDash/>
-
-            <DashboardSessions />
 
             <div className="admin-section">
               <h2 className="section-title">Admin Dashboard</h2>

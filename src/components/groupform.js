@@ -6,6 +6,7 @@ const GroupForm = () => {
     name: '',
     description: '',
     subject: 'Mathematics',
+    department: 'Science',
     isPublic: true
   });
 
@@ -61,6 +62,23 @@ const GroupForm = () => {
             value={formData.description}
             onChange={(e) => setFormData({...formData, description: e.target.value})}
           />
+        </div>
+
+        <div className="form-group">
+          <label>Department:</label>
+          <select
+            value={formData.department}
+            onChange={(e) => setFormData({...formData, department: e.target.value})}
+          >
+            <option value="Science">Science</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Arts">Arts</option>
+            <option value="Business">Business</option>
+            <option value="Medicine">Medicine</option>
+            <option value="Law">Law</option>
+            <option value="Education">Education</option>
+            <option value="General">General</option>
+          </select>
         </div>
 
         <div className="form-group">
