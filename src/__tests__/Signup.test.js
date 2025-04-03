@@ -23,7 +23,7 @@ jest.mock('../utils/axios', () => {
 });
 
 import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { renderWithRouter } from '../test-utils';
 import SignUp from '../components/signup';
 import axios from '../utils/axios';
@@ -34,10 +34,15 @@ process.env.REACT_APP_API_URL = 'http://localhost:5001';
 describe('SignUp Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorageMock.setItem.mockClear();
+    mockNavigate.mockClear();
+    axios.post.mockClear();
   });
 
-  it('renders signup form', () => {
-    renderWithRouter(<SignUp />);
+  it('renders signup form', async () => {
+    await act(async () => {
+      renderWithRouter(<SignUp />);
+    });
 
     expect(screen.getByPlaceholderText('Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
@@ -46,7 +51,7 @@ describe('SignUp Component', () => {
   });
 
   it('handles successful signup', async () => {
-    // Setup mock response to match exactly what the userController.js returns
+    // Setup mock response to exactly match what the component expects
     const mockResponse = {
       data: {
         token: 'mock-token',
@@ -59,75 +64,86 @@ describe('SignUp Component', () => {
       }
     };
     
-    // Setup axios mock to return our response
     axios.post.mockResolvedValue(mockResponse);
     
-    renderWithRouter(<SignUp />);
+    await act(async () => {
+      renderWithRouter(<SignUp />);
+    });
 
     // Fill in the form
-    fireEvent.change(screen.getByPlaceholderText('Name'), {
-      target: { value: 'Test User' }
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Name'), {
+        target: { value: 'Test User' }
+      });
     });
-    fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'test@example.com' }
+    
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Email'), {
+        target: { value: 'test@example.com' }
+      });
     });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'password123' }
-    });
-
-    // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
-
-    // Use waitFor with only one expectation to ensure stable testing
-    await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledWith('/api/auth/signup', {
-        name: 'Test User',
-        email: 'test@example.com',
-        password: 'password123'
+    
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Password'), {
+        target: { value: 'password123' }
       });
     });
 
-    // Check localStorage and navigation in separate waitFor blocks
-    await waitFor(() => {
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'mock-token');
+    // Submit the form
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
     });
-    
-    await waitFor(() => {
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', 'user-id');
+
+    // Directly check that the API was called with correct data
+    expect(axios.post).toHaveBeenCalledWith('/api/auth/signup', {
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'password123'
     });
-    
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-    });
+
+    // Directly check localStorage and navigation
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockResponse.data.token);
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('userId', mockResponse.data.user._id);
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
   });
 
   it('handles signup error', async () => {
-    // Mock axios rejection with error structure from backend
+    // Mock axios rejection
     axios.post.mockRejectedValue({
       response: {
         data: { message: 'Email already exists' }
       }
     });
 
-    renderWithRouter(<SignUp />);
+    await act(async () => {
+      renderWithRouter(<SignUp />);
+    });
 
     // Fill in the form
-    fireEvent.change(screen.getByPlaceholderText('Name'), {
-      target: { value: 'Test User' }
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Name'), {
+        target: { value: 'Test User' }
+      });
     });
-    fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'test@example.com' }
+    
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Email'), {
+        target: { value: 'test@example.com' }
+      });
     });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'password123' }
+    
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText('Password'), {
+        target: { value: 'password123' }
+      });
     });
 
     // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
-
-    // Wait for error to be displayed
-    await waitFor(() => {
-      expect(screen.getByText(/Email already exists/i)).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
     });
+
+    // Check that error message is displayed
+    expect(screen.getByText(/Email already exists/i)).toBeInTheDocument();
   });
 }); 
