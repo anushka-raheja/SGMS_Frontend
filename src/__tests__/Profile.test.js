@@ -27,47 +27,70 @@ describe('Profile Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Clear any localStorage mocks
-    if (window.localStorage) {
-      window.localStorage.clear();
-    }
+    // Mock localStorage.getItem to return a token
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: jest.fn(() => 'some-token'),
+      },
+      writable: true
+    });
+  });
+
+  afterEach(() => {
+    // Clean up localStorage mock
+    jest.restoreAllMocks();
   });
 
   it('displays authentication error when not authenticated', () => {
+    // Override the localStorage mock for this specific test
+    window.localStorage.getItem.mockReturnValueOnce(null);
     renderWithRouter(<Profile />);
     expect(screen.getByText(/Authentication required/i)).toBeInTheDocument();
   });
 
-  it('displays user profile data when authenticated and loaded', async () => {
-    // Set up localStorage before component renders
-    const token = 'fake-token';
-    Storage.prototype.getItem = jest.fn(() => token);
-
-    // Mock successful API responses
-    axios.get
-      .mockResolvedValueOnce({ data: mockUserData })
-      .mockResolvedValueOnce({ data: mockGroups });
+  it('displays user profile data when loaded', async () => {
+    // Mock API responses
+    axios.get.mockImplementation((url) => {
+      if (url === '/api/users/me') {
+        return Promise.resolve({ data: mockUserData });
+      }
+      if (url === '/api/groups/my-groups') {
+        return Promise.resolve({ data: mockGroups });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
 
     renderWithRouter(<Profile />);
 
+    // First verify loading state
+    expect(screen.getByText(/Loading profile/i)).toBeInTheDocument();
+
+    // Wait for loading to finish
     await waitFor(() => {
-      expect(screen.getByText(/User Profile/)).toBeInTheDocument();
+      expect(screen.queryByText(/Loading profile/i)).not.toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(screen.getByText(mockUserData.name)).toBeInTheDocument();
-      expect(screen.getByText(new RegExp(mockUserData.email))).toBeInTheDocument();
-      expect(screen.getByText(new RegExp(mockUserData.department))).toBeInTheDocument();
-    });
+    // Now check for the profile content
+    expect(screen.getByText('User Profile')).toBeInTheDocument();
+    expect(screen.getByText(`${mockUserData.name}'s Profile`)).toBeInTheDocument();
+    
+    // Check for contact information
+    expect(screen.getByText(/Email:/i)).toBeInTheDocument();
+    expect(screen.getByText(mockUserData.email)).toBeInTheDocument();
+    
+    expect(screen.getByText(/Department:/i)).toBeInTheDocument();
+    expect(screen.getByText(mockUserData.department)).toBeInTheDocument();
+
+    // Check for groups
+    expect(screen.getByText('Group 1')).toBeInTheDocument();
+    expect(screen.getByText('Group 2')).toBeInTheDocument();
   });
 
   it('displays error message when API call fails', async () => {
     axios.get.mockRejectedValueOnce(new Error('Failed to fetch'));
-
     renderWithRouter(<Profile />);
-
     await waitFor(() => {
-      expect(screen.getByText(/Authentication required/i)).toBeInTheDocument();
+      expect(screen.getByText('Error: Failed to fetch')).toBeInTheDocument();
     });
   });
 }); 
