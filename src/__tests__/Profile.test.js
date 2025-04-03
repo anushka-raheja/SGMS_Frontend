@@ -27,6 +27,10 @@ describe('Profile Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Clear any localStorage mocks
+    if (window.localStorage) {
+      window.localStorage.clear();
+    }
   });
 
   it('displays authentication error when not authenticated', () => {
@@ -35,13 +39,9 @@ describe('Profile Component', () => {
   });
 
   it('displays user profile data when authenticated and loaded', async () => {
-    // Mock successful authentication
-    const mockLocalStorage = {
-      getItem: jest.fn().mockReturnValue('fake-token'),
-    };
-    Object.defineProperty(window, 'localStorage', {
-      value: mockLocalStorage
-    });
+    // Set up localStorage before component renders
+    const token = 'fake-token';
+    Storage.prototype.getItem = jest.fn(() => token);
 
     // Mock successful API responses
     axios.get
@@ -51,11 +51,12 @@ describe('Profile Component', () => {
     renderWithRouter(<Profile />);
 
     await waitFor(() => {
-      // Check for profile header with user's name
-      expect(screen.getByText(`${mockUserData.name}'s Profile`)).toBeInTheDocument();
-      // Check for email in the expected format
+      expect(screen.getByText(/User Profile/)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(mockUserData.name)).toBeInTheDocument();
       expect(screen.getByText(new RegExp(mockUserData.email))).toBeInTheDocument();
-      // Check for department in the expected format
       expect(screen.getByText(new RegExp(mockUserData.department))).toBeInTheDocument();
     });
   });
