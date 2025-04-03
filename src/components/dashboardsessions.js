@@ -70,9 +70,6 @@ const DashboardSessions = () => {
               <div className="session-details">
                 <p className="session-date">{formatDate(session.date)}</p>
                 <p className="session-duration">{session.duration} min</p>
-                <p className="session-attendees">
-                  {session.attendees.length} {session.attendees.length === 1 ? 'attendee' : 'attendees'}
-                </p>
               </div>
               
               <div className="session-actions">

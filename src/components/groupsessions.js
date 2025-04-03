@@ -73,84 +73,78 @@ const GroupSessions = ({ groupId }) => {
   };
 
   if (loading) return <div className="loading">Loading study sessions...</div>;
-  
+
   return (
     <div className="group-sessions">
       <div className="sessions-header">
         <h3>Study Sessions</h3>
         <button 
           className="create-session-btn"
-          onClick={() => setShowForm(true)}
+          onClick={() => setShowForm(!showForm)}
         >
-          Create Session
+          {showForm ? 'Cancel' : 'Create New Session'}
         </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
       {showForm && (
-        <div className="session-form-container">
-          <form onSubmit={handleSubmit} className="session-form">
-            <div className="form-group">
-              <label htmlFor="title">Title</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={newSession.title}
-                onChange={handleChange}
-                required
-              />
-            </div>
+        <form className="session-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="title">Title</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={newSession.title}
+              onChange={handleChange}
+              required
+              placeholder="Enter session title"
+            />
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <textarea
-                id="description"
-                name="description"
-                value={newSession.description}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              value={newSession.description}
+              onChange={handleChange}
+              placeholder="Enter session description"
+              rows="3"
+            />
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="date">Date & Time</label>
-              <input
-                type="datetime-local"
-                id="date"
-                name="date"
-                value={newSession.date}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="date">Date and Time</label>
+            <input
+              type="datetime-local"
+              id="date"
+              name="date"
+              value={newSession.date}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="duration">Duration (minutes)</label>
-              <input
-                type="number"
-                id="duration"
-                name="duration"
-                min="15"
-                value={newSession.duration}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="duration">Duration (minutes)</label>
+            <input
+              type="number"
+              id="duration"
+              name="duration"
+              value={newSession.duration}
+              onChange={handleChange}
+              required
+              min="15"
+              max="480"
+            />
+          </div>
 
-            <div className="form-actions">
-              <button type="submit" className="submit-btn">Create</button>
-              <button 
-                type="button" 
-                className="cancel-btn"
-                onClick={() => setShowForm(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
+          <div className="form-actions">
+            <button type="submit" className="submit-btn">Create Session</button>
+          </div>
+        </form>
       )}
 
       <div className="sessions-list">
@@ -158,19 +152,15 @@ const GroupSessions = ({ groupId }) => {
           <p className="no-sessions">No study sessions scheduled yet.</p>
         ) : (
           sessions.map(session => (
-            <div key={session._id} className={`session-card ${session.status}`}>
-              <div className="session-header">
+            <div key={session._id} className="session-card">
+              <div className="session-info">
                 <h4>{session.title}</h4>
-                <span className={`session-status ${session.status}`}>
-                  {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
-                </span>
-              </div>
-              
-              <div className="session-details">
-                <p className="session-description">{session.description}</p>
-                <p className="session-date"><strong>When:</strong> {formatDate(session.date)}</p>
-                <p className="session-duration"><strong>Duration:</strong> {session.duration} minutes</p>
-                <p className="session-creator"><strong>Created by:</strong> {session.createdBy.name}</p>
+                {session.description && (
+                  <p className="description">{session.description}</p>
+                )}
+                <p className="date-time">{formatDate(session.date)}</p>
+                <p className="duration">{session.duration} minutes</p>
+                <p className="created-by">Created by: {session.createdBy.name}</p>
               </div>
             </div>
           ))
