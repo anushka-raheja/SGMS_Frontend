@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../utils/axios';
 import '../App.css';
 
@@ -15,11 +15,7 @@ const GroupSessions = ({ groupId }) => {
     groupId: groupId
   });
 
-  useEffect(() => {
-    fetchSessions();
-  }, [groupId]);
-
-  const fetchSessions = async () => {
+  const fetchSessions = useCallback(async () => {
     try {
       setLoading(true);
       const res = await axios.get(`/api/study-sessions/group/${groupId}`);
@@ -31,7 +27,11 @@ const GroupSessions = ({ groupId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [groupId]);
+
+  useEffect(() => {
+    fetchSessions();
+  }, [fetchSessions]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -60,19 +60,6 @@ const GroupSessions = ({ groupId }) => {
     }
   };
 
-  const handleAttendance = async (sessionId, attending) => {
-    try {
-      const res = await axios.patch(`/api/study-sessions/${sessionId}/attendance`, { attending });
-      setSessions(prev => 
-        prev.map(session => 
-          session._id === sessionId ? res.data : session
-        )
-      );
-    } catch (err) {
-      console.error('Error updating attendance:', err);
-    }
-  };
-
   const formatDate = (dateString) => {
     const options = { 
       weekday: 'long', 
@@ -83,13 +70,6 @@ const GroupSessions = ({ groupId }) => {
       minute: '2-digit'
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const isAttending = (session) => {
-    return session.attendees.some(attendee => 
-      attendee._id === localStorage.getItem('userId') || 
-      attendee === localStorage.getItem('userId')
-    );
   };
 
   if (loading) return <div className="loading">Loading study sessions...</div>;

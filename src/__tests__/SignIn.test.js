@@ -61,7 +61,7 @@ describe('SignIn Component', () => {
     });
     
     // Submit the form
-    const form = screen.getByRole('form');
+    const form = screen.getByTestId('signin-form');
     fireEvent.submit(form);
     
     // Verify API call
@@ -92,7 +92,7 @@ describe('SignIn Component', () => {
     });
     
     // Submit the form
-    const form = screen.getByRole('form');
+    const form = screen.getByTestId('signin-form');
     fireEvent.submit(form);
     
     // Verify error message appears

@@ -28,19 +28,6 @@ const DashboardSessions = () => {
     }
   };
 
-  const handleAttendance = async (sessionId, attending) => {
-    try {
-      const res = await axios.patch(`/api/study-sessions/${sessionId}/attendance`, { attending });
-      setSessions(prev => 
-        prev.map(session => 
-          session._id === sessionId ? res.data : session
-        )
-      );
-    } catch (err) {
-      console.error('Error updating attendance:', err);
-    }
-  };
-
   const formatDate = (dateString) => {
     const options = { 
       weekday: 'short', 
@@ -50,13 +37,6 @@ const DashboardSessions = () => {
       minute: '2-digit'
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  const isAttending = (session) => {
-    return session.attendees.some(attendee => 
-      attendee._id === localStorage.getItem('userId') || 
-      attendee === localStorage.getItem('userId')
-    );
   };
 
   // Get upcoming sessions (scheduled and not in the past)

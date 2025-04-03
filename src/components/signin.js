@@ -49,7 +49,7 @@ const SignIn = () => {
     <div className="signin-container">
       <h2>Sign In</h2>
       {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleSubmit} role="form">
+      <form onSubmit={handleSubmit} data-testid="signin-form">
         <div className="form-group">
           <input
             type="email"
