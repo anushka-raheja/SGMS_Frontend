@@ -5,7 +5,6 @@ import '@testing-library/jest-dom';
 import GroupPage from '../components/grouppage';
 import axios from '../utils/axios';
 
-// Mock the axios module
 jest.mock('../utils/axios', () => ({
   get: jest.fn(),
   post: jest.fn(),
@@ -13,13 +12,11 @@ jest.mock('../utils/axios', () => ({
   delete: jest.fn()
 }));
 
-// Mock the useParams hook
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({ groupId: 'mock-group-id' })
 }));
 
-// Mock the child components
 jest.mock('../components/groupsessions', () => () => <div data-testid="mock-sessions">Sessions Mock</div>);
 jest.mock('../components/groupdocuments', () => () => <div data-testid="mock-documents">Documents Mock</div>);
 
@@ -29,7 +26,6 @@ describe('GroupPage Component', () => {
   });
 
   test('shows loading state initially', () => {
-    // Make the axios request never resolve to keep the component in loading state
     axios.get.mockImplementation(() => new Promise(() => {}));
     
     renderWithRouter(<GroupPage />);
@@ -38,7 +34,6 @@ describe('GroupPage Component', () => {
   });
 
   test('shows error state when API call fails', async () => {
-    // Mock a failed API call
     axios.get.mockRejectedValueOnce({ 
       response: { data: { error: 'Group not found or access denied' } } 
     });
@@ -51,7 +46,6 @@ describe('GroupPage Component', () => {
   });
 
   test('shows error when response is undefined', async () => {
-    // Mock undefined response
     axios.get.mockResolvedValueOnce(undefined);
     
     renderWithRouter(<GroupPage />);
@@ -62,7 +56,6 @@ describe('GroupPage Component', () => {
   });
 
   test('renders group data when API call succeeds', async () => {
-    // Mock a successful API call
     const mockGroup = {
       _id: 'mock-group-id',
       name: 'Test Group',

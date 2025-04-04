@@ -5,7 +5,6 @@ import '@testing-library/jest-dom';
 import GroupsList from '../components/grouplist';
 import axiosInstance from '../utils/axios';
 
-// Mock the axios instance with proper implementation
 jest.mock('../utils/axios', () => {
   const mockAxiosInstance = {
     get: jest.fn(),
@@ -26,7 +25,6 @@ jest.mock('../utils/axios', () => {
   return mockAxiosInstance;
 });
 
-// Mock the window.location.hostname
 Object.defineProperty(window, 'location', {
   value: {
     hostname: 'localhost'
@@ -57,9 +55,7 @@ describe('GroupsList Component', () => {
   ];
 
   beforeEach(() => {
-    // Reset all mocks before each test
     jest.clearAllMocks();
-    // Mock localStorage
     const localStorageMock = {
       getItem: jest.fn(() => 'mock-token'),
       setItem: jest.fn(),
@@ -72,18 +68,15 @@ describe('GroupsList Component', () => {
   });
 
   test('renders GroupsList component correctly', async () => {
-    // Mock the API response before rendering
     axiosInstance.get.mockResolvedValueOnce({ data: [] });
     
     await act(async () => {
       renderWithRouter(<GroupsList />);
     });
     
-    // No specific assertion needed for basic rendering
   });
 
   test('displays loading state initially', async () => {
-    // Delay the API response
     axiosInstance.get.mockImplementation(() => 
       new Promise(resolve => setTimeout(() => resolve({ data: [] }), 100))
     );
@@ -104,7 +97,6 @@ describe('GroupsList Component', () => {
       renderWithRouter(<GroupsList />);
     });
 
-    // Wait for groups to load
     expect(screen.getByText('Test Group 1')).toBeInTheDocument();
     expect(screen.getByText('Test Group 2')).toBeInTheDocument();
     expect(screen.getByText('Mathematics')).toBeInTheDocument();
@@ -118,7 +110,6 @@ describe('GroupsList Component', () => {
       renderWithRouter(<GroupsList />);
     });
 
-    // Wait for error message
     expect(screen.getByText(/Error: Failed to load groups/i)).toBeInTheDocument();
   });
 
@@ -129,7 +120,6 @@ describe('GroupsList Component', () => {
       renderWithRouter(<GroupsList />);
     });
 
-    // Wait for the message to appear
     expect(screen.getByText(/No study groups available to join/i)).toBeInTheDocument();
   });
 
@@ -140,7 +130,6 @@ describe('GroupsList Component', () => {
       renderWithRouter(<GroupsList />);
     });
 
-    // Check if group details are displayed
     expect(screen.getByText('Test Description 1')).toBeInTheDocument();
   });
 
@@ -151,7 +140,6 @@ describe('GroupsList Component', () => {
       renderWithRouter(<GroupsList />);
     });
 
-    // Check if privacy badges are displayed
     expect(screen.getByText('Public')).toBeInTheDocument();
     expect(screen.getByText('Private')).toBeInTheDocument();
   });

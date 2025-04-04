@@ -3,13 +3,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from '../utils/axios';
 import GroupDocuments from '../components/groupdocuments';
 
-// Simple mock for localStorage
 const mockLocalStorage = {
   getItem: () => 'mock-token'
 };
 Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
 
-// Simple mock for axios
 jest.mock('../utils/axios', () => ({
   get: jest.fn(),
   post: jest.fn()
@@ -49,15 +47,12 @@ describe('GroupDocuments Component', () => {
     
     const { container } = render(<GroupDocuments groupId={mockGroupId} />);
     
-    // Wait for initial load
     await waitFor(() => {
       expect(screen.getByText('Documents')).toBeInTheDocument();
     });
 
-    // Get file input directly from the container
     const fileInput = container.querySelector('input[type="file"]');
     
-    // Upload file
     fireEvent.change(fileInput, {
       target: { files: [new File(['test'], 'test.pdf', { type: 'application/pdf' })] }
     });
@@ -78,15 +73,12 @@ describe('GroupDocuments Component', () => {
     
     const { container } = render(<GroupDocuments groupId={mockGroupId} />);
     
-    // Wait for initial load
     await waitFor(() => {
       expect(screen.getByText('Documents')).toBeInTheDocument();
     });
 
-    // Get file input directly from the container
     const fileInput = container.querySelector('input[type="file"]');
     
-    // Upload file
     fireEvent.change(fileInput, {
       target: { files: [new File(['test'], 'test.pdf', { type: 'application/pdf' })] }
     });

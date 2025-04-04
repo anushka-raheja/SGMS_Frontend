@@ -5,8 +5,8 @@ const GroupForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    subject: 'Mathematics',
-    department: 'Science',
+    subject: '',
+    department: 'Computer Science & Engineering',
     isPublic: true
   });
 
@@ -69,29 +69,42 @@ const GroupForm = () => {
           <select
             value={formData.department}
             onChange={(e) => setFormData({...formData, department: e.target.value})}
+            required
           >
-            <option value="Science">Science</option>
-            <option value="Engineering">Engineering</option>
-            <option value="Arts">Arts</option>
-            <option value="Business">Business</option>
-            <option value="Medicine">Medicine</option>
-            <option value="Law">Law</option>
-            <option value="Education">Education</option>
-            <option value="General">General</option>
+            <option value="">Select Department</option>
+            <option value="Multi Departmental">Multi Departmental</option>
+            <option value="Aerospace Engineering">Aerospace Engineering</option>
+            <option value="Agricultural & Food Engineering">Agricultural & Food Engineering</option>
+            <option value="Architecture">Architecture</option>
+            <option value="Biotechnology">Biotechnology</option>
+            <option value="Chemical Engineering">Chemical Engineering</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+            <option value="Electrical Engineering">Electrical Engineering</option>
+            <option value="Electronics & Electrical Communication Engineering">Electronics & Electrical Communication Engineering</option>
+            <option value="Geology & Geophysics">Geology & Geophysics</option>
+            <option value="Humanities & Social Sciences">Humanities & Social Sciences</option>
+            <option value="Industrial Engineering">Industrial Engineering</option>
+            <option value="Materials Science">Materials Science</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Mechanical Engineering">Mechanical Engineering</option>
+            <option value="Medical Science & Technology">Medical Science & Technology</option>
+            <option value="Metallurgical & Materials Engineering">Metallurgical & Materials Engineering</option>
+            <option value="Mining Engineering">Mining Engineering</option>
+            <option value="Ocean Engineering & Naval Architecture">Ocean Engineering & Naval Architecture</option>
           </select>
         </div>
 
         <div className="form-group">
           <label>Subject:</label>
-          <select
+          <input
+            type="text"
             value={formData.subject}
             onChange={(e) => setFormData({...formData, subject: e.target.value})}
-          >
-            <option value="Mathematics">Mathematics</option>
-            <option value="Physics">Physics</option>
-            <option value="Computer Science">Computer Science</option>
-            <option value="Biology">Biology</option>
-          </select>
+            placeholder="Enter the subject"
+            required
+          />
         </div>
 
         <div className="form-group">
